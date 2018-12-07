@@ -36,7 +36,7 @@ unique(PT$Phenotype)
 ```
 
 ####read in data from Barberan et al. 2016 (IJSEM: https://figshare.com/articles/International_Journal_of_Systematic_and_Evolutionary_Microbiology_IJSEM_phenotypic_database/4272392)
-```{r}
+```{r ijsem}
 path = "4272392/"
 #read table
 
@@ -60,7 +60,7 @@ levels(ijsem$Oxygen)[levels(ijsem$Oxygen)=="microerophile"]<-"microaerophile"
 ijsem$pH_optimum<-as.character(ijsem$pH_optimum)
 #this step splits the range values and takes the mean value
 #values that are not numeric are transformed to NAs
-ijsem$pH_optimum<-sapply(ijsem$pH_optimum, simplify=T, function(x){mean(as.numeric(unlist(strsplit(x, split="-", fixed=T))))})
+ijsem$pH_optimum<-suppressWarnings(sapply(ijsem$pH_optimum, simplify=T, function(x){mean(as.numeric(unlist(strsplit(x, split="-", fixed=T))))}))
 #remove pH values <0 and >10
 ijsem$pH_optimum[ijsem$pH_optimum<0 | ijsem$pH_optimum>10]<-NA
 
@@ -68,13 +68,13 @@ ijsem$pH_optimum[ijsem$pH_optimum<0 | ijsem$pH_optimum>10]<-NA
 ijsem$Temp_optimum<-as.character(ijsem$Temp_optimum)
 #this step splits the range values and takes the mean value
 #values that are not numeric are transformed to NAs
-ijsem$Temp_optimum<-sapply(ijsem$Temp_optimum, simplify=T, function(x){mean(as.numeric(unlist(strsplit(x, split="-", fixed=T))))})
+ijsem$Temp_optimum<-suppressWarnings(sapply(ijsem$Temp_optimum, simplify=T, function(x){mean(as.numeric(unlist(strsplit(x, split="-", fixed=T))))}))
 
 #clean Salt_optimum column
 ijsem$Salt_optimum<-as.character(ijsem$Salt_optimum)
 #this step splits the range values and takes the mean value
 #values that are not numeric are transformed to NAs
-ijsem$Salt_optimum<-sapply(ijsem$Salt_optimum, simplify=T, function(x){mean(as.numeric(unlist(strsplit(x, split="-", fixed=T))))})
+ijsem$Salt_optimum<-suppressWarnings(sapply(ijsem$Salt_optimum, simplify=T, function(x){mean(as.numeric(unlist(strsplit(x, split="-", fixed=T))))}))
 #there are some formatting issues that should be solved
 
 summary(ijsem)
