@@ -19,7 +19,7 @@ pkgTest <- function(x)
   }
   library(x, character.only = TRUE)
 }
-neededPackages <- c("data.table")
+neededPackages <- c("data.table", "dplyr", "reshape2", "corrplot", "RColorBrewer")
 
 for (package in neededPackages){pkgTest(package)}
 
@@ -32,8 +32,26 @@ for (package in neededPackages){pkgTest(package)}
 ```{r}
 PT = fread("ProTraits_precisionScores.txt",blank.lines.skip=TRUE)
 # PT[1,]
+names(PT)
 unique(PT$Phenotype)
+
+# PT_wide = reshape(PT, idvar = "Organism_name", timevar = "Phenotype", direction = "wide")
+PT$Organism_name=factor(PT$Organism_name)
+PT$Phenotype=factor(PT$Phenotype)
+PT$`Integrated_score_+`=as.numeric(PT$`Integrated_score_+`)
+dfmatrix <- acast(PT, Organism_name ~ Phenotype,value.var='Integrated_score_+',fun.aggregate=sum,margins=FALSE)
+
+corrmatrix <- cor(dfmatrix, use="pairwise")
+
+
+#col1 <- colorRampPalette(brewer.pal(9,"BrBG"))
+#https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html
+corrplot(corrmatrix, method = "color", type = "upper",
+         cl.pos = "n", tl.pos = "n")
+
 ```
+
+
 
 ####read in data from Barberan et al. 2016 (IJSEM: https://figshare.com/articles/International_Journal_of_Systematic_and_Evolutionary_Microbiology_IJSEM_phenotypic_database/4272392)
 ```{r ijsem}

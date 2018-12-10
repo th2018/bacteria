@@ -5,11 +5,55 @@ Ilya
 
 #### install packages
 
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:data.table':
+    ## 
+    ##     between, first, last
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+    ## 
+    ## Attaching package: 'reshape2'
+
+    ## The following objects are masked from 'package:data.table':
+    ## 
+    ##     dcast, melt
+
+    ## corrplot 0.84 loaded
+
 #### read in data from Brbic et al. (ProTraits: <http://protraits.irb.hr/data.html>)
 
 ``` r
 PT = fread("ProTraits_precisionScores.txt",blank.lines.skip=TRUE)
 # PT[1,]
+names(PT)
+```
+
+    ##  [1] "Tax_ID"                 "Organism_name"         
+    ##  [3] "Phenotype"              "Minority"              
+    ##  [5] "Original_label"         "Hamap_+"               
+    ##  [7] "Hamap_-"                "MicrobeWiki_+"         
+    ##  [9] "MicrobeWiki_-"          "Wikipedia_+"           
+    ## [11] "Wikipedia_-"            "Other_text_+"          
+    ## [13] "Other_text_-"           "PMC_articles_+"        
+    ## [15] "PMC_articles_-"         "Pubmed_abstracts_+"    
+    ## [17] "Pubmed_abstracts_-"     "Proteome_composition_+"
+    ## [19] "Proteome_composition_-" "Phyletic_profiles_+"   
+    ## [21] "Phyletic_profiles_-"    "Coexisting_microbes_+" 
+    ## [23] "Coexisting_microbes_-"  "Gene_neighbourhood_+"  
+    ## [25] "Gene_neighbourhood_-"   "Codon_usage_bias_+"    
+    ## [27] "Codon_usage_bias_-"     "Integrated_score_+"    
+    ## [29] "Integrated_score_-"
+
+``` r
 unique(PT$Phenotype)
 ```
 
@@ -437,6 +481,31 @@ unique(PT$Phenotype)
     ## [422] "metabolism=carbondioxidefixation"                                
     ## [423] "(bioluminesc,gramneg,nonmotil,reliabl,biodegrad)"                
     ## [424] "(subsurfac,geochem,deep,aquif,depth)"
+
+``` r
+# PT_wide = reshape(PT, idvar = "Organism_name", timevar = "Phenotype", direction = "wide")
+PT$Organism_name=factor(PT$Organism_name)
+PT$Phenotype=factor(PT$Phenotype)
+PT$`Integrated_score_+`=as.numeric(PT$`Integrated_score_+`)
+```
+
+    ## Warning: NAs introduced by coercion
+
+``` r
+dfmatrix <- acast(PT, Organism_name ~ Phenotype,value.var='Integrated_score_+',fun.aggregate=sum,margins=FALSE)
+
+corrmatrix <- cor(dfmatrix, use="pairwise")
+```
+
+    ## Warning in cor(dfmatrix, use = "pairwise"): the standard deviation is zero
+
+``` r
+col1 <- colorRampPalette(brewer.pal(9,"BrBG"))
+corrplot(corrmatrix, method = "color", type = "upper",
+         cl.pos = "n", tl.pos = "n")
+```
+
+![](bacteria_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
 #### read in data from Barberan et al. 2016 (IJSEM: <https://figshare.com/articles/International_Journal_of_Systematic_and_Evolutionary_Microbiology_IJSEM_phenotypic_database/4272392>)
 
